@@ -1,0 +1,22 @@
+--select com sub select
+select *,
+	
+(
+		
+select
+			
+COUNT(*)
+		
+from
+			
+os
+		
+where
+			
+CD_OS = VIEW_OS_SERVICOS_SPOOL.CD_OS
+	
+) as TotalCapas
+	
+from
+VIEW_OS_SERVICOS_SPOOL where CD_SERVICO = 1895
+

@@ -1,0 +1,162 @@
+Consulta tamanho de cada tabela:
+go
+EXEC sp_MSforeachTable @command1="print 'tb_cor' ",
+                                               @command2="sp_spaceused '?' "
+
+
+
+
+
+ --procedure para consulta de ID
+CREATE PROCEDURE ConsultaIDgrupo
+AS
+BEGIN
+	select MAX(controlegrupo) from tb_grupo
+END
+
+ --usando a procedure consulta ID
+ use BancoSistema
+  go
+   exec ConsultaIDgrupo
+  go
+
+
+ --procedure para consulta like
+create procedure ConsultaLike
+ @texto char(3)
+ as
+  begin
+	select * from TB_GRUPO where decricao like @texto
+  end
+
+ 
+--usando a procedure consulta like
+use BancoProtenorte
+ go
+  exec ConsultaLike
+ 	@texto = '%b'
+  go
+
+
+
+ -- procedure para inserção
+ CREATE PROCEDURE InsereGrupo
+   @codigogrupo char(3),
+   @decricao varchar(255),
+   @status char(1),
+   @marca char(1),
+   @data_inc datetime
+
+ AS
+
+   if @decricao <> '' and @codigogrupo <> 0
+ 	begin
+      	INSERT INTO TB_GRUPO (codigogrupo, decricao, status, marca, data_inc )
+                  	VALUES(@codigogrupo, @decricao,@status, @marca, @data_inc)
+     	--mensagem
+    	print 'Cadastro efetuado com sucesso'
+  	end
+   	else
+    	--mensagem de erro
+    	print 'Os valores devem ser corretamente preenchidos' 	 
+
+go
+
+ --usando a procedure Insere
+
+use BancoSistema
+  go
+  exec InsereGrupo
+   @codigogrupo = 25,
+   @decricao = 'GRUPO 25',
+   @status = 'S',
+   @marca =  'N',
+   @data_inc = '2011-10-07'
+ go
+
+
+ -- procedure para exclusão
+ CREATE PROCEDURE DeletaRegistroGrupo
+   @codigogrupo char(3)
+ AS
+
+   if @codigogrupo <> 0
+ 	begin
+          	DELETE From TB_GRUPO Where controlegrupo = @codigogrupo
+     	--mensagem
+    	print 'Registro deletado com sucesso'
+  	end
+   	else
+    	--mensagem de erro
+    	print 'Registro não pode ser deletado' 	 
+go
+
+
+--usando a procedure de exclusão
+use BancoSistema
+ go
+  exec DeletaRegistroGrupo
+ 	@codigogrupo = '15'
+  go
+
+
+ -- procedure para atualização
+ CREATE PROCEDURE AtualizaGrupo
+   @controlegrupo int,
+   @codigogrupo char(3),
+   @decricao varchar(255),
+   @status char(1),
+   @marca char(1),
+   @data_inc datetime
+ AS
+   if @codigogrupo <> 0
+ 	begin
+      	update  TB_GRUPO set codigogrupo = @codigogrupo,
+                           	decricao = @decricao,
+                           	status = @status,
+                           	marca =  @marca,
+                           	data_inc = @data_inc
+              	where controlegrupo = @controlegrupo
+     	--mensagem
+    	print 'Registro atualizado com sucesso'
+  	end
+   	else
+    	--mensagem de erro
+    	print 'Registro não pode ser atualizado' 	 
+go
+
+ --usando a procedure atualização
+use BancoProtenorte
+  go
+  exec AtualizaGrupo
+   @controlegrupo = 2,
+   @codigogrupo = '',
+   @decricao = 'GRUPO 25',
+   @status = 'S',
+   @marca =  'N',
+   @data_inc = '2011-10-07'
+ go
+
+
+
+USE [BANCOTESTE]
+GO
+/****** Object:  StoredProcedure [dbo].[ATUALIZAMODERADOR]    Script Date: 06/15/2015 15:38:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[ATUALIZAMODERADOR]
+ @IDPERGUNTA INT 
+AS
+BEGIN
+ DECLARE @IDCATEGORIA INT
+ DECLARE @IDMODERADOR INT
+ 
+ SELECT  @IDCATEGORIA = IDCATEGORIA FROM TB_PERGUNTA WHERE IDPERGUNTA = @IDPERGUNTA
+ SELECT  @IDMODERADOR = IDMODERADOR FROM TB_MODERADOR WHERE IDCATEGORIA = @IDCATEGORIA
+ UPDATE TB_PERGUNTA SET  IDMODERADOR = @IDMODERADOR, BLOQUEIO_PERGUNTA='N', EXCLUIR_PERGUNTA='N'  WHERE IDPERGUNTA = @IDPERGUNTA
+ 
+END
+
+

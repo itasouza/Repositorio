@@ -1,0 +1,241 @@
+Retorna todos os campos de uma tabela
+select * from cliente
+ 
+Retorna o campo código e nome da tabela cliente
+select codigo,nome from cliente
+ 
+Retorna apenas o código e o nome usando o alias
+select codigo as CÓDIGO,nome as
+NOME_DO_CLIENTE from cliente
+
+ 
+Retorna todos os clientes que começam com a letra “J”
+select * from cliente where nome like 'j%'
+ 
+Retorna todos os registros de uma tabela com uma condição especifica
+select * from cliente where uf='CE'
+ 
+Retorna tosos os clients que tem uma seqüência de dois 8 no seu cpf
+select * from cliente where cpf like '%88%'
+ 
+Retorna todos os clientes ordenados pelo nome
+select * from cliente order by nome
+ 
+Retorna todos os clientes ordenados pelo nome em ordem crescente
+select * from cliente order by nome asc
+ 
+Retorna todos os clientes ordenados pelo nome em ordem decrescente
+select * from cliente order by nome desc
+ 
+ 
+Retorna o campo código, cliente da tabela “cvenda” nome da tabela “cliente” valorvenda, nf da tabela “cvenda”.
+ 
+select cvenda.codigo, cvenda.cliente,
+cliente.nome, cvenda.datavenda, cvenda.valorvenda,
+cvenda.nf from cvenda,cliente where
+cvenda.cliente=cliente.codigo
+ 
+Retorna o campo código, cliente da tabela “cvenda” nome da tabela “cliente” datavenda, valorvenda, nf, vendedor da tabela “cvenda” nome da tabela funcionário
+ 
+select cvenda.codigo, cvenda.cliente, cliente.nome,
+cvenda.datavenda, cvenda.valorvenda, cvenda.nf,
+cvenda.vendedor, funcionario.nome from cvenda,
+cliente,funcionario where cvenda.cliente=cliente.codigo
+and cvenda.vendedor=funcionario.codigo
+ 
+Retorna o campo codvenda, codprodod da tabela “dvenda”, descrição da tabela “produto”qtde, unitário, total da tebale dvenda
+ 
+select dvenda.codvenda,dvenda.codprod,produto.descricao,
+dvenda.qtde,dvenda.unitario,dvenda.total from dvenda,produto
+where dvenda.codprod=produto.codigo
+ 
+Para somar o valor total da soma desse campo de todos os registros na tabela
+select sum(total) from dvenda where codvenda=7
+ 
+Para somar o valor total da soma desse campo de todos os registros na tabela alterando o nome da tabela para total
+select sum(total) as Total from dvenda where codvenda=7
+ 
+Para extrair a media aritmética desse campo de todos os registros na tabela.
+select avg(total) as Total from dvenda where codvenda=7
+ 
+Exibe qual é o menor valor desse campo em todos os registros
+select min(total) as Total from dvenda where codvenda=7
+ 
+Exibe qual é o maior valor desse campo em todos os registros
+select max(total) as Total from dvenda where codvenda=7
+ 
+Significa literalmente entre. Muito usado para fazer consultas requerendo o resultado entre duas datas.
+select * from cvenda where datavenda
+between '10/01/2005' and '10/31/2005' order by datavenda
+ 
+Significa literalmente entre. Muito usado para fazer consultas requerendo o resultado entre duas datas. (somando valores na mesma consulta)
+select sum(valorvenda) from cvenda where datavenda
+between '10/10/2005' and '10/15/2005'
+ 
+Fazer consulta mostrando os valores que estão entre os valores informados
+select * from cvenda where valorvenda between 20 and 50
+ 
+Retorna o número de registros baseado numa determinada consulta
+Select count(*) from produto
+ 
+Retorna o número de registros baseado numa determinada consulta com uma condição
+select count(*) from dvenda where codprod=3
+ 
+select count(*) as quantidade,produto.codigo,
+produto.descricao from dvenda,produto
+where dvenda.codprod=3 and produto.codigo=dvenda.codprod
+group by produto.codigo,produto.descricao
+ 
+ 
+Seleciona valores únicos para campos que estejam repetidos.
+Select distinct(cidade) from cliente
+ 
+Seleciona valores únicos e soma os registros
+Select count(*),cidade from cliente group by cidade
+ 
+E possivel saber quanto seriam minhas vendas se eu tivesse vendido 10% mais caro
+select codigo,cliente,datavenda,valorvenda,
+valorvenda*1.1 as Mais_10_Por_Cento from cvenda
+ 
+E possivel saber quanto seriam minhas vendas se eu tivesse vendido 10% a menos
+select codigo,cliente,datavenda,valorvenda,
+valorvenda*0.9 as Menos_10_Por_Cento from cvenda
+ 
+Seleciona da tabela “cvenda” cliente, nome da tabela cliente, estou adicionando uma frase que ocupara todos os campos da tabela e somando o campo valorvenda.
+SELECT cvenda.cliente,cliente.nome,'COMPROU AQUI',
+sum(valorvenda) FROM cvenda,cliente
+where cvenda.cliente=cliente.codigo
+group by cvenda.cliente,cliente.nome
+ 
+Caso queira ver apenas as vendas cujo total são acima de R$ 50,00 teria que usar a cláusula Having que serve para eliminar grupos inteiros depois que forma calculados. Coisa que a cláusula where não consegue fazer.
+ 
+select codvenda,sum(total) from dvenda group by codvenda
+ 
+select codvenda,sum(total) from dvenda group by codvenda
+having sum(total) > 50
+ 
+Esta instrução insere o nome Carlos Pereira no campo “nome” da Tabela cliente, o campo código da tabela e auto-numerada, portanto não e permitido inserir dados nele.
+insert into cliente(nome) values('CARLOS PEREIRA')
+ 
+Inserindo informações em dois campos distintos
+insert into cliente (nome,endereco)
+values ('MARIA DE SOUSA','RUA CAMBERRA')
+ 
+Quando for necessário inserir vários registros na tabela, exemplos têm duas tabelas de clientes podemos criar uma consulta anexada.
+Copia todos os dados de uma tabela para outra.
+insert into NovoCliente select cliente.* from cliente
+ 
+Cria uma consulta atualização que altera os valores dos campos em uma tabela especifica com base em critérios específicos.
+Update Produto set valor = valor * 1.1
+ 
+ 
+Atualiza um campo com um critério
+Update Produto set valor = valor * 1.1 where Marca=’ATICA’
+ 
+ 
+Cria uma consulta exclusão que remove registros de uma ou mais tabelas listadas na cláusula from que satisfaz a cláusula where, não e possível remover campos específicos, apenas registros.
+Remove todos os registros que tem a marca atica
+delete from produto where marca='ATICA'
+
+
+
+Verificar se tem registros duplicados 
+
+select distinct
+NUMERO_PROCESSO
+from TB_CLIENTE 
+group by NUMERO_PROCESSO
+having COUNT(NUMERO_PROCESSO)>1
+
+ 
+ 
+Criar consultas dentro de outras, ou seja, o resultado de uma consulta será utilizado por outra consulta, de forma encadeada e contida no mesmo sql.
+Ex: se eu quiser saber quais produtos participam em qualquer pedido cuja quantidade seja maior ou igual a 10.
+ 
+select descricao from produto where codigo in
+(select codprod from dvenda where qtde>=10)
+ 
+EX: Quais as vendas que tiveram seu valor abaixo da média
+ 
+select codigo, valorvenda from cvenda where valorvenda <
+(select avg(valorvenda) from cvenda)
+ 
+EX: Quais os produtos que não estão presentes em nenhuma venda.
+ 
+select codigo, descricao from produto where not exists
+(select * from dvenda where codprod = produto.codigo)
+
+
+
+-- EX: Quais os clientes que não estão presentes em nenhuma venda no intervalo de tempo.
+ 
+ select
+ controlecliente,
+ nome 
+ from 
+ TB_CLIENTE_FORNECEDOR where not exists
+ (select * from TB_C_VENDAS 
+   where controlecliente = TB_CLIENTE_FORNECEDOR.controlecliente 
+   and data_inc between '2016-08-30 00:00:00.000' and '2016-08-01 00:00:00.000'  
+  )
+ group by controlecliente , nome
+ 
+ --teste
+ select * from TB_C_VENDAS where data_inc between '2016-08-30 00:00:00.000' and '2016-08-01 00:00:00.000'  
+ and controlecliente in ( 2779,2780)
+
+ 
+ 
+
+ 
+Join é a ferramenta básica de trabalho nos bancos de dados relacionais. É através dos diferentes tipos de join que conseguimos recuperar dados de uma ou mais tabelas com o auxilio dos relacionamentos existentes.
+Com duas tabelas relacionadas “produtos” e “vendas”, posso utilizar o “left outer join”, para listar somente as linhas existentes na tabela produto sem correspondência na tabela venda.
+ 
+select p.codigo,p.descricao from produto p
+left outer join dvenda v
+on v.codprod = p.codigo
+where v.codprod IS NULL
+ 
+Para selecionar produtos que foram vendidos e não possuem cadastro. Posso utilizar o “right Join” ligando um filtro para listar somente as linhas existentes na tabela venda sem correspondência na tabela produto.
+ 
+select v.codprod from produto p
+right outer join dvenda v
+on v.codprod = p.codigo
+where p.codigo IS NULL
+ 
+Para lista as linhas que possuem equivalência nas duas tabelas utilizamos o “inner join”
+ 
+select distinct p.codigo,p.descricao from produto p
+inner join dvenda v on p.codigo = v.codprod
+ 
+Para representar a união de todos os produtos com todas as vendas, independentemente de relacionamento utilizaremos um full outer join.
+ 
+Faltando
+ 
+E através dessa parte do sql que criamos, alteramos e apagamos tabelas e índices. Uma tabela e difinida usando o comando “create table” com a sintaxe (create table nometabela (campo1 tipo1, campo2 tipo2, primary key (campo)
+ 
+create table usuario(
+codigo integer,
+nome character(20),
+senha character(10),
+primary key(codigo))
+ 
+Para alterar uma tabela utilizamos o comando “alter table” inserindo um novo campo.
+ 
+alter table usuario add funcao character(20)
+ 
+Para retirarmos um campo utilizamos “DROP”.
+ 
+alter table usuario drop função
+ 
+Para apagar a tabela usamos o comando “drop”
+ 
+drop table usuário
+ 
+Somando valores :
+select sum(valorEntrada) as TotalEntrada from lancamentoMes
+select sum(valorSaida)as TotalSaida from lancamentoMes
+ 
+Subtraindo valores:
+select sum(valorEntrada) - sum(valorSaida) as SALDO from lancamentoMes
+

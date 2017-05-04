@@ -1,0 +1,116 @@
+Procedure de inserção
+ 
+if exists(select * from sys.procedures where sys.procedures.name = 'sprAlteracaoVenda' )
+BEGIN
+	DROP PROCEDURE sprAlteracaoVenda;
+	PRINT 'PROCEDURE sprAlteracaoVenda LOCALIZADA E EXCLUIDA';
+END
+  ELSE
+	BEGIN
+  	PRINT 'Não foi localizada a procedure sprAlteracaoVenda';
+	END
+ 
+USE [TESTE]
+GO
+/****** Object:  StoredProcedure [dbo].[sprGravacaoVenda]	Script Date: 02/07/2013 17:01:15 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+  	ALTER PROCEDURE [dbo].[sprGravacaoVenda]
+  	(
+        	@COD_PDV INT,-- CONTROLE
+        	@COD_CLIENTE INT , --tabela de cabecalho
+        	@QTDE INT, --tabela de cabecalho
+        	@USUARIO_RESPONSAVEL INT,  --tabela de cabecalho
+        	@DT_VENDA DATETIME, --tabela de cabecalho
+        	@VALOR_TOTAL FLOAT, --tabela de cabecalho
+        	@PRODUTO VARCHAR(50), -- tabela de detalhe
+        	@PRECO_CUSTO float, -- tabela de detalhe
+        	@PRECO_UNITARIO float, -- tabela de detalhe
+        	@QTDE_DETALHE int, -- tabela de detalhe 
+        	@DESCONTO float,-- tabela de detalhe 	
+        	@USUARIO_RESPONSAVEL_DETALHE VARCHAR(20),-- tabela de detalhe
+        	@DT_VENDA_DETALHE datetime -- tabela de detalhe
+  	)
+  	AS
+  	BEGIN
+ 	--abertura da transação
+ 	BEGIN TRAN tranGravacaoVenda;
+ 	
+ 	IF @COD_PDV = 0
+ 	BEGIN 	
+        	 --inseri dados do cabecalho da venda
+        	 INSERT INTO
+              	  TB_PEDIDO_VENDA
+              	  (
+                    	COD_CLIENTE,
+                    	QTDE,
+                    	USUARIO_RESPONSAVEL,
+                    	DT_VENDA,
+                    	VALOR_TOTAL
+              	  )
+              	  VALUES
+              	   (
+                    	 @COD_CLIENTE,
+                    	 @QTDE,
+                    	 @USUARIO_RESPONSAVEL,
+                    	 @DT_VENDA,
+                    	 @VALOR_TOTAL
+              	   );
+        	if @@ERROR > 0
+        	begin
+              	GOTO ERRO;
+        	end
+        	
+        	SET @COD_PDV =
+              	(
+                    	SELECT
+                         	MAX(COD_PDV)
+                    	FROM
+                         	TB_PEDIDO_VENDA
+              	);
+  	 END
+       	
+  	--gravação da tabela de detalhe
+  	INSERT INTO
+        	TB_ITENS_PEDIDO_VENDA
+        	(
+              	  COD_PDV,
+              	  PRODUTO,
+              	  PRECO_CUSTO,
+              	  PRECO_UNITARIO,
+              	  QTDE,
+              	  DESCONTO,
+              	  USUARIO_RESPONSAVEL,
+              	  DT_VENDA 
+        	)
+        	VALUES
+        	(
+        		@COD_PDV,
+              	@PRODUTO,
+              	@PRECO_CUSTO,
+              	@PRECO_UNITARIO,
+              	@QTDE_DETALHE,
+              	@DESCONTO,
+              	@USUARIO_RESPONSAVEL_DETALHE,
+              	@DT_VENDA_DETALHE
+        	);
+        	if @@ERROR > 0
+        	begin
+              	GOTO ERRO;
+        	end
+      	
+        	 COMMIT TRAN tranGravacaoVenda;
+        	 print 'Funcionou';
+        	 GOTO FIM;
+        	 
+        	 ERRO:
+        	 ROLLBACK TRAN tranGravacaoVenda;
+        	 print 'Erro.';
+        	 
+        	 FIM:
+        	 PRINT 'Acabou.';
+  	END
+  	print 'procedure sprGravacaoVenda criada com sucesso!!'
+ 

@@ -1,0 +1,114 @@
+Procedure de alteração
+ 
+if exists(select * from sys.procedures where sys.procedures.name = 'sprAlteracaoVenda' )
+BEGIN
+	DROP PROCEDURE sprAlteracaoVenda;
+	PRINT 'PROCEDURE sprAlteracaoVenda LOCALIZADA E EXCLUIDA';
+END
+  ELSE
+	BEGIN
+  	PRINT 'Não foi localizada a procedure sprAlteracaoVenda';
+	END
+ 
+USE [TESTE]
+GO
+/****** Object:  StoredProcedure [dbo].[sprAlteracaoVenda]	Script Date: 02/07/2013 16:24:16 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+  	create PROCEDURE [dbo].[sprAlteracaoVenda]
+  	(
+  		@GRAVA_ITENS INT, --controle para grava os itens apos altera o cabecalho
+        	@COD_PDV INT,-- CONTROLE
+        	@COD_CLIENTE INT , --tabela de cabecalho
+        	@QTDE INT, --tabela de cabecalho
+        	@USUARIO_RESPONSAVEL INT,  --tabela de cabecalho
+        	@DT_VENDA DATETIME, --tabela de cabecalho
+        	@VALOR_TOTAL FLOAT, --tabela de cabecalho
+        	@PRODUTO VARCHAR(50), -- tabela de detalhe
+        	@PRECO_CUSTO float, -- tabela de detalhe
+        	@PRECO_UNITARIO float, -- tabela de detalhe
+        	@QTDE_DETALHE int, -- tabela de detalhe 
+        	@DESCONTO float,-- tabela de detalhe 	
+        	@USUARIO_RESPONSAVEL_DETALHE VARCHAR(20),-- tabela de detalhe
+        	@DT_VENDA_DETALHE datetime -- tabela de detalhe
+  	)
+  	AS
+  	BEGIN
+ 	--abertura da transação
+ 	BEGIN TRAN tranAlteracaoVenda;
+ 	
+ 	IF @COD_PDV <> 0  --codigo do cabecalho a ser alterado EX 10
+ 	BEGIN 	
+        	 --altera dados do cabecalho
+        	IF @GRAVA_ITENS = 0
+        	BEGIN
+              	 UPDATE
+                    	  TB_PEDIDO_VENDA
+                    	  SET
+                         	COD_CLIENTE = @COD_CLIENTE,
+                         	QTDE  =  @QTDE,
+                         	USUARIO_RESPONSAVEL = @USUARIO_RESPONSAVEL,
+                         	DT_VENDA = @DT_VENDA,
+                         	VALOR_TOTAL = @VALOR_TOTAL
+                    	  WHERE
+                         	COD_PDV = @COD_PDV
+                         	
+        	--deleta todos os registros da tabela para gravar novamente apenas na 1 vez
+        	DELETE FROM TB_ITENS_PEDIDO_VENDA WHERE COD_PDV = @COD_PDV              	  	
+        	 END
+            	
+        	if @@ERROR > 0
+        	begin
+              	GOTO ERRO;
+        	end
+        	--alterou o cabecalho
+        	
+  	 END
+	
+	--atualiza o @grava_itens com 1 para evitar ficar alterando o cabecalho
+	SET @GRAVA_ITENS = 1
+      	
+  	--gravação da tabela de detalhe
+  	INSERT INTO
+        	TB_ITENS_PEDIDO_VENDA
+        	(
+              	  COD_PDV,
+              	  PRODUTO,
+              	  PRECO_CUSTO,
+              	  PRECO_UNITARIO,
+              	  QTDE,
+              	  DESCONTO,
+              	  USUARIO_RESPONSAVEL,
+              	  DT_VENDA 
+        	)
+        	VALUES
+        	(
+  	  		@COD_PDV,
+              	@PRODUTO,
+              	@PRECO_CUSTO,
+              	@PRECO_UNITARIO,
+              	@QTDE_DETALHE,
+              	@DESCONTO,
+              	@USUARIO_RESPONSAVEL_DETALHE,
+              	@DT_VENDA_DETALHE
+        	);
+        	if @@ERROR > 0
+        	begin
+              	GOTO ERRO;
+        	end
+      	
+        	 COMMIT TRAN tranAlteracaoVenda;
+        	 print 'Funcionou';
+        	 GOTO FIM;
+        	 
+        	 ERRO:
+        	 ROLLBACK TRAN tranAlteracaoVenda;
+        	 print 'Erro.';
+        	 
+        	 FIM:
+        	 PRINT 'Acabou.';
+  	END
+  	print 'procedure sprAlteracaoVenda criada com sucesso!!'
+ 

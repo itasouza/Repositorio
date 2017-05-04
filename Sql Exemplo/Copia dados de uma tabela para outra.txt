@@ -1,0 +1,6 @@
+INSERT INTO Compras(Coloque aqui os campos separados por vírgula, OCampoDataNaTabelaCompra)
+SELECT OsMesmosCampos, GETDATE() FROM Pedidos WHERE IDdoPedido = OIDdoPedidoQueVocêFez
+ 
+
+Insert into COMPRAS(Campo001, campo002, campo003)
+Select Campo001, campo002, campo003 from PEDIDOS << Condições que atenda suas necessidades >>

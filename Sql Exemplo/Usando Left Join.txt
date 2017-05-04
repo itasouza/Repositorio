@@ -1,0 +1,21 @@
+--trazer todos os atendimentos com o none do usurio de atendimento
+-- caso no tenha atendente mostra a descrio do atendimento sem usurio
+SELECT
+	
+TB_SUPORTE.ID_ATENDIMENTO,
+TB_USUARIO.ID_USUARIO,
+TB_USUARIO.NOME,
+	
+TB_ATENDIMENTO.DESCRICAO
+FROM
+	
+TB_ATENDIMENTO
+	
+INNER JOIN TB_SUPORTE
+	
+ON TB_SUPORTE.ID_ATENDIMENTO = TB_ATENDIMENTO.ID_ATENDIMENTO
+	
+LEFT JOIN TB_USUARIO
+	
+ON TB_SUPORTE.ID_USUARIO = TB_USUARIO.ID_USUARIO
+

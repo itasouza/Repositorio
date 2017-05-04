@@ -1,0 +1,27 @@
+Procedure de busca pedido pelo número
+ 
+ 
+USE [TESTE]
+GO
+/****** Object:  StoredProcedure [dbo].[sprBuscaNumeroVenda]	Script Date: 02/07/2013 17:26:33 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+  	create PROCEDURE [dbo].[sprBuscaNumeroVenda]
+  	(
+        	@COD_PDV INT -- controle do número da venda
+  	)
+  	AS
+  	BEGIN
+  	
+ 	IF @COD_PDV <> 0  --codigo do cabecalho a ser alterado EX 10
+ 	BEGIN    
+	   SELECT * FROM  TB_PEDIDO_VENDA  WHERE COD_PDV = @COD_PDV 
+	   SELECT * FROM  TB_ITENS_PEDIDO_VENDA  WHERE COD_PDV = @COD_PDV         	 
+  	 END
+        	 FIM:
+        	 PRINT 'Acabou.';
+  	END
+  	print 'procedure sprBuscaNumeroVenda criada com sucesso!!'
+ 

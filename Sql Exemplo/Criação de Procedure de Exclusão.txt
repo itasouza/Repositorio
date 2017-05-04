@@ -1,0 +1,55 @@
+Procedure de exclusão
+ 
+
+
+USE [BANCO_PROTENORTE]
+GO
+/****** Object:  StoredProcedure [dbo].[sprExcluirUsuario]    Script Date: 05/03/2017 23:39:32 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,Itamar>
+-- Create date: <Create Date,03-05-217>
+-- Description:	<Description,faz a exclusao do usuário>
+-- =============================================
+ALTER PROCEDURE [dbo].[sprExcluirUsuario]
+   --controle do usuário 
+   @controleusuario int
+
+AS
+BEGIN
+
+ 	--abertura da transação
+ 	BEGIN TRAN sprExcluirUsuario;
+ 	
+   --verifica se ele existe
+   if(@controleusuario > 0)
+    begin
+      --delete o registro
+      delete from TB_USUARIO where controleusuario = @controleusuario
+      
+      --erro
+      if (@@ERROR > 0)
+         goto erro
+       else
+         goto certo
+       
+    end
+    
+    --comita
+    certo:
+    commit tran sprExcluirUsuario;
+    print 'Funcionou a exclusão';
+    Goto FIM;
+    
+    erro:
+    rollback tran sprExcluirUsuario;
+    print 'aconteceu um erro.';
+    
+    FIM:
+    print 'acabou'
+    
+    
+END
