@@ -1,0 +1,61 @@
+procedure TfrmPrincipal.btnBackupClick(Sender: TObject);
+ var
+  Sql : String;
+  HoraGeracao  : String;
+  NomeDoBeckup : String;
+  CaminhoBanco : String;
+  NomeBanco    : String;
+  BackupBanco  : String;
+begin
+
+  if ( Public_NomeBancoDados  = '') or (Public_CaminhoBackupBanco = '' ) then
+   begin
+      mensagem := (':: Esta faltando acrescentar o nome do banco de dados ou o caminho para gravação do backup' +#13 +
+                   ' verificar no cadastro de empresa. ' );
+      Application.MessageBox(PChar(mensagem), 'Informação',MB_OK + MB_ICONINFORMATION);
+      exit;
+   end;
+
+   lbBackup.Visible := True;
+   lbInformacao.Visible := False;
+
+   ProgressBarBackup.Position := 3 + vProgressaoBackup;
+  //geração de backup do banco de dados
+ if MessageDlg('Esta opção ira Gera um Backup do Banco de dados, Continuar?' , mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+   begin
+    lbBackup.Visible := False;
+    ProgressBarBackup.Position := 0;
+    Exit;
+   end;
+   //informações do banco de dados
+   HoraGeracao  := StringReplace(TimeToStr(Now), ':','',[rfReplaceAll]);  //TimeToStr(Now); //pega a hora atual do sistema
+   NomeBanco    := Public_NomeBancoDados;   //adicionar nome do banco de dados
+   NomeDoBeckup := StringReplace(Public_NomeDoUsuario, ' ','',[rfReplaceAll]); //pega o nome do usuario logado no sistema, retira os espaços em branco
+   CaminhoBanco := Public_CaminhoBackupBanco + NomeBanco + NomeDoBeckup + HoraGeracao + '.bak ';
+   BackupBanco  := NomeBanco + '-Full Database Backup';
+
+   sql := ' BACKUP DATABASE ['+NomeBanco+'] TO                                                          '+
+          ' DISK = N' + #39 + CaminhoBanco  + #39                                                        +
+          ' WITH NOFORMAT, NOINIT,                                                                      '+
+          ' NAME = N' + #39 + BackupBanco + #39 + ', SKIP, NOREWIND, NOUNLOAD,  STATS = 10 '             ;
+
+   try
+     dmGenerico.cdsGenerico.Close;
+     dmGenerico.cdsGenerico.CommandText := Sql;
+     dmGenerico.cdsGenerico.Execute;
+
+    except
+       on e:exception do
+      begin
+         //caso ocorra algum erro mostra esta informação
+          MessageDlg('Erro abrindo banco de dados - cdsBackup. Mensagem:' +e.Message,mtError,[mbOK],0);
+          Exit;
+     end;
+   end;
+    ProgressBarBackup.Position := 100;
+    lbBackup.Visible := False;
+    mensagem := 'Operação Finaliza com sucesso!!';
+    Application.MessageBox(PChar(mensagem), 'Informação',MB_OK + MB_ICONINFORMATION);
+
+end;
+

@@ -1,0 +1,40 @@
+USE [teste]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[sprEstruturaPadrao] 
+   --declaração de variáveis
+   @idusuario int
+
+AS
+BEGIN
+   --abre a transação para update e insert
+   --BEGIN TRAN sprEstruturaPadrao;
+
+   if(@idusuario > 0)
+   begin
+       --select
+	   select * from TB_USUARIO where idusuario = @idusuario
+
+	  if(@@ERROR <> 0)
+	     PRINT N'Error = ' + CAST(@@ERROR AS NVARCHAR(20));
+         -- finaliza transação para update e insert
+		 --  ROLLBACK TRAN sprEstruturaPadrao 
+	  else
+	  	   PRINT 'tudo certo';
+		 -- finaliza transação para update e insert
+		 --  COMMIT TRAN  sprEstruturaPadrao
+
+
+   end
+
+
+END

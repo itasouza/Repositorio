@@ -1,0 +1,7 @@
+            /// <summary>
+            /// Aqui estou recebendo o login e senha do usuário, enviado para o view.
+            /// </summary>
+            /// <param name="usuario"></param>
+            /// <param name="senha"></param>
+            /// <returns> Loga no site da IBM Máximo</returns>
+            /// 

@@ -1,0 +1,3 @@
+select TOP(1) CAST(idusuario as varchar(10) ) as CODIGO_INDICE  
+from TB_USUARIO
+ORDER BY  idusuario DESC

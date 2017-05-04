@@ -1,0 +1,84 @@
+
+
+        protected void btnTeste_Click(object sender, EventArgs e)
+        {
+            getPropriedadesCookie("itamarcookie");
+        }
+
+        protected void btnGravar_Click(object sender, EventArgs e)
+        {
+            GravandoDadosCookie("itamarcookie");
+        }
+
+        /*
+       * Método 01
+       * Método responsável por efetuar a Gravação de um Cookie
+       */
+        private void GravandoDadosCookie(string nomeCookie)
+        {
+            // Verificando se já existe o cookie na máquina do usuário
+            HttpCookie cookie = Request.Cookies[nomeCookie];
+            if (cookie == null)
+            {
+                // Criando a Instância do cookie
+                cookie = new HttpCookie(nomeCookie);
+                //Adicionando a propriedade "Nome" no cookie
+                cookie.Values.Add("valorNome", "Itamar");
+                //Adicionando a propriedade "Naturalidade" no cookie
+                cookie.Values.Add("valorNaturalidade", "São Paulo/SP");
+                //Adicionando a propriedade "Idade" no cookie
+                cookie.Values.Add("valorTempo", "1 ano");
+                //Adicionando a propriedade "Profissão" no cookie
+                cookie.Values.Add("valorProfissão", "Analista Programador");
+                //colocando o cookie para expirar em 365 dias
+                cookie.Expires = DateTime.Now.AddDays(365);
+                // Definindo a segurança do nosso cookie
+                cookie.HttpOnly = true;
+                // Registrando cookie
+                this.Page.Response.AppendCookie(cookie);
+
+            }
+        }
+
+
+
+        /*
+      * Método 02
+      *  Método responsável por obter as propriedades de um cookie caso ele exista
+      */
+
+        public void getPropriedadesCookie(string nomeCookie)
+        {
+            // Obtém a requisição com dos dados do cookie
+            HttpCookie cookie = ObterRequisicaoCookie(nomeCookie);
+            if (cookie != null)
+            {
+                // Separa os valores das propriedade
+                string[] valores = cookie.Value.ToString().Split('&');
+                // Varre os valores das propriedades encontrados
+                for (int i = 0; i < valores.Length; i++)
+                {
+                    // Escreve os valores das propriedades encontradas
+                    Response.Write("Cookie - Propriedade:" + (i + 1) + " - " + valores[i] + "<br>");
+
+                }
+            }
+            // else
+            //  Response.Write("Cookie - Propriedade:" string.Empty);
+
+        }
+
+
+        private HttpCookie ObterRequisicaoCookie(string nomeCookie)
+        {
+            try
+            {
+                // Retornando o cookie caso exista
+                return this.Page.Request.Cookies[nomeCookie];
+            }
+            catch
+            {
+                // Caso não exista o cookie informado, retorna NULL
+                return null;
+            }
+        }

@@ -1,0 +1,27 @@
+    public void ExportacaoExcel()
+    {
+
+        var retorno = ConsultaDados(txt_PEDIAB_FK_PEDI_ID.Text, txt_dataDE_H.Value, txt_dataAte_H.Value, txt_CLIE_NOME.Text, txt_CLIE_EMAIL.Text, txt_CLIE_TELEFONE.Text);
+        string fileName = "Relatorio_cliente_" + DateTime.Now.ToString("mm-dd-yyyy-HH-mm-ss") + ".xlsx"; 
+
+        DataGrid dg = new DataGrid();
+        dg.AllowPaging = false;
+        dg.DataSource = retorno;
+        dg.DataBind();
+
+        System.Web.HttpContext.Current.Response.Clear();
+        System.Web.HttpContext.Current.Response.Buffer = true;
+        System.Web.HttpContext.Current.Response.ContentEncoding = Encoding.UTF8;
+        System.Web.HttpContext.Current.Response.Charset = "";
+        System.Web.HttpContext.Current.Response.AddHeader("Content-Disposition",
+          "attachment; filename=" + fileName);
+
+        System.Web.HttpContext.Current.Response.ContentType =
+          "application/vnd.ms-excel";
+        System.IO.StringWriter stringWriter = new System.IO.StringWriter();
+        System.Web.UI.HtmlTextWriter htmlTextWriter =
+          new System.Web.UI.HtmlTextWriter(stringWriter);
+        dg.RenderControl(htmlTextWriter);
+        System.Web.HttpContext.Current.Response.Write(stringWriter.ToString());
+        System.Web.HttpContext.Current.Response.End();
+    }

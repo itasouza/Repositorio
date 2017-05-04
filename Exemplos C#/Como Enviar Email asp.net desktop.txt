@@ -1,0 +1,60 @@
+using System.Net.Mail;
+using System.Net;
+
+    <add key="rcTituloEmailPadrao" value=" aquele produto que você estava esperando chegou!!"/>
+    <add key="rcEmailRemetente" value="contato.sac@onofre.com.br" />
+    <!-- Quando tem e-mail de teste, o sistema passa a enviar todas as solicitações para este e-mail -->
+    <add key="rcEmailDestinoParaTeste" value="itamar@inovaebiz.com.br"/>
+    <add key="rcSenhaRemetente" value="Onofre@2015!" />
+    <add key="rcSmtp" value="smtp.office365.com" />
+    <add key="rcPorta" value="587" />
+
+
+
+        public void EnvioDeEmail(string ParaQualEmail, string Assunto, string Mensagem)
+        {
+            MailMessage objEmail = new MailMessage();
+            objEmail.From = new MailAddress("Onofre Farmácia <"+rcEmailRementente+">");
+            objEmail.To.Add(ParaQualEmail);
+            objEmail.Priority = MailPriority.Normal;
+            objEmail.IsBodyHtml = true;
+            objEmail.Subject = Assunto;
+            objEmail.Body = Mensagem;
+            objEmail.SubjectEncoding = Encoding.GetEncoding("ISO-8859-1");
+            objEmail.BodyEncoding = Encoding.GetEncoding("ISO-8859-1");
+            SmtpClient objSmtp = new SmtpClient();
+            objSmtp.Host = rcSmtp;
+            objSmtp.EnableSsl = true;
+            objSmtp.Port = rcPorta;
+            objSmtp.UseDefaultCredentials = false;
+            objSmtp.Credentials = new NetworkCredential(rcEmailRementente, rcSenhaRemetente);
+
+            try
+            {
+                objSmtp.Send(objEmail);
+            }
+            catch (SmtpFailedRecipientException ex)
+            {
+                StreamWriter vWriter = new StreamWriter(CaminhoDolog, true);
+                vWriter.WriteLine("Erro SmtpFailedRecipientException : " + DateTime.Now.ToString());
+                vWriter.WriteLine(ex.Message);
+                vWriter.Flush();
+                vWriter.Close();
+            }
+            catch (SmtpException ex)
+            {
+                StreamWriter vWriter = new StreamWriter(CaminhoDolog, true);
+                vWriter.WriteLine("Erro SmtpException : " + DateTime.Now.ToString());
+                vWriter.WriteLine(ex.Message);
+                vWriter.Flush();
+                vWriter.Close();
+            }
+            catch (Exception ex)
+            {
+                StreamWriter vWriter = new StreamWriter(CaminhoDolog, true);
+                vWriter.WriteLine("Erro Genérico : " + DateTime.Now.ToString());
+                vWriter.WriteLine(ex.Message);
+                vWriter.Flush();
+                vWriter.Close();
+            }
+        }

@@ -1,0 +1,66 @@
+  //http://www.macoratti.net/10/11/aspn_csv.htm
+      // https://msdn.microsoft.com/pt-br/library/ms228388.aspx
+        //      LerArquivo(@"C:\Users\Itamar\Desktop\Conferencia sistema\validar.txt");
+
+
+        public void LerArquivo(Stream arquivo)
+        {
+            char[] delimitador = {',', '.', ':', '|', '\t', ';' };
+
+            using (StreamReader sr = new StreamReader(arquivo, Encoding.GetEncoding("ISO-8859-1")))
+            {
+
+                while (sr.Peek() != -1)
+                {
+                    Response.Write(sr.ReadLine() + "\n");
+                }
+
+            }
+
+        }
+
+
+
+        protected void Button1_Click(object sender, EventArgs e)
+        {
+
+            if (FileUploader.HasFile)
+            {
+                if (TiposArquivosPermitidos(FileUploader.FileName))
+                {
+                    try
+                    {
+                        FileUploader.SaveAs((Server.MapPath("ArquivoRecebido//") + FileUploader.FileName));
+                        LerArquivo(FileUploader.FileContent);
+                        Label1.Text = "Arquivo enviado com sucesso";
+
+                    }
+                    catch (HttpException)
+                    {
+
+                        Label1.Text = "Error ao enviar o arquivo";
+                    }
+                }
+                else
+                {
+                    Label1.Text = "Extensão de arquivo não permitido";
+                }
+            }
+
+        }
+
+
+
+        private bool TiposArquivosPermitidos(string arquivo)
+        {
+            string extensao = System.IO.Path.GetExtension(arquivo).ToLower();
+            string[] permitidos = { ".csv", ".txt" };
+            for (int i = 0; i < permitidos.Length; i++)
+            {
+                if (string.Compare(extensao, permitidos[i]) == 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }

@@ -1,0 +1,37 @@
+public Empregado SpListarPorLoginSenha(string login, string senha )
+{
+    var strQuery = "";
+    strQuery += " spAcessoSistema";
+    strQuery += string.Format(" @prmUser = '{0}' , ", login);
+    strQuery += string.Format(" @prmPass = '{0}' ", senha);
+ 
+    using (contexto = new Contexto())
+    {
+        var retornoDataReader = contexto.ExecutaComandoComRetorno(strQuery);
+        return TransformaReaderEmListaObjetos(retornoDataReader).FirstOrDefault();
+    }
+ 
+}
+
+
+  private List<TB_ACESSO> TransformaReaderEmListaObjetos(SqlDataReader reader)
+        {
+            var retornando = new List<TB_ACESSO>();
+            while (reader.Read())
+            {
+
+                TB_ACESSO tabela = new TB_ACESSO()
+                {
+                    IDACESSO = reader["IDACESSO"] == DBNull.Value ? 0 : Convert.ToInt32(reader["IDACESSO"]),
+                    NOMEUSUARIO = reader["NOMEUSUARIO"] == DBNull.Value ? string.Empty : reader["NOMEUSUARIO"].ToString(),
+                    DATA_ACESSO = reader["DATA_ACESSO"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(reader["DATA_ACESSO"]),
+                    HORA_ACESSO = reader["HORA_ACESSO"] == DBNull.Value ? string.Empty : reader["HORA_ACESSO"].ToString()
+
+
+                };
+
+                retornando.Add(tabela);
+            }
+            reader.Close();
+            return retornando;
+        }

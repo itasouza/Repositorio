@@ -1,0 +1,74 @@
+<form id="formulario" runat="server">
+
+            <div class="container" id="upload">
+            <asp:Label ID="lbSelecao" runat="server" Text="Selecione o arquivo:"></asp:Label>
+            <asp:FileUpload ID="FileUpload" runat="server" />
+            </div>
+            <br/>
+            <div class="container">
+            <asp:Button ID="btnEnviar" runat="server" Text="Enviar Arquivo" OnClick="btnEnviar_Click" /> <br/>
+            <asp:Label ID="lbInformacao" runat="server" Text="....."></asp:Label>
+         </div>
+
+ </form>
+ 
+ 
+        private bool TiposArquivosPermitidos(string arquivo)
+        {
+            string extensao = System.IO.Path.GetExtension(arquivo).ToLower();
+            string[] permitidos = { ".csv", ".txt" };
+            for (int i = 0; i < permitidos.Length; i++)
+            {
+                if (string.Compare(extensao, permitidos[i]) == 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+		
+
+        public void LerArquivo(Stream arquivo)
+        {
+            char[] delimitador = { ',', '.', ':', '|', '\t', ';' };
+
+            using (StreamReader sr = new StreamReader(arquivo, Encoding.GetEncoding("ISO-8859-1")))
+            {
+
+                while (sr.Peek() != -1)
+                {
+                    Response.Write(sr.ReadLine() + "\n");
+                }
+
+            }
+
+        }
+
+
+
+        protected void btnEnviar_Click(object sender, EventArgs e)
+        {
+            if (FileUpload.HasFile)
+            {
+                if (TiposArquivosPermitidos(FileUpload.FileName))
+                {
+                    try
+                    {
+                        FileUpload.SaveAs((Server.MapPath("ArquivoRecebido//") + FileUpload.FileName));
+                        LerArquivo(FileUpload.FileContent);
+                        lbInformacao.Text = "Arquivo enviado com sucesso";
+
+                    }
+                    catch (HttpException)
+                    {
+
+                        lbInformacao.Text = "Error ao enviar o arquivo";
+                    }
+                }
+                else
+                {
+                    lbInformacao.Text = "Extensão de arquivo não permitido";
+                }
+            }
+
+        }
